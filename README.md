@@ -1,2 +1,2 @@
 # Proyecto_investigacion
-Repositorio correspondiente al repositorio de investiagación.
+Repositorio correspondiente al proyecto de investiagación.
