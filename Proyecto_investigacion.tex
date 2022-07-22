@@ -569,7 +569,7 @@ El cuadro \ref{tab:cuadro5} es inverso al cuadro \ref{tab:cuadro4}, que represen
 	Recordemos el ejemplo que se propuso en la transformación \textit{SubBytes}, donde el byte $\{19\}$ tomaba el valor $\{D4\}$. Si ahora queremos aplicar la trasnformación \textit{InvSubBytes} al byte $\{D4\}$, miramos en el cuadro \ref{tab:cuadro5} la fila \textbf{Dx} y la columna \textbf{x4}, dando como resultado el byte $\{19\}$.
 \end{ejem}
 
-\subsubsection{Transformación InvShiftRows()}
+\subsubsection{InvShiftRows()}
  Esta transformación consiste en una rotación cíclica de \textit{bytes} hacia la derecha. Por tanto, es una rotación en dirección opuesta a la que se propuso en la transformación \textit{ShiftRows}.
 \begin{figure}[h]
 	\includegraphics[scale=0.65]{figuras/InvShiftRows.png}
@@ -578,7 +578,7 @@ El cuadro \ref{tab:cuadro5} es inverso al cuadro \ref{tab:cuadro4}, que represen
 	\label{fig: 8}
 \end{figure}
 
-\subsubsection{Transformación InvMixColumns()}
+\subsubsection{InvMixColumns()}
 Es la operación inversa de \textit{MixColumns}, en esta transformación cada columna se trata como un polinomio y luego se multiplica módulo $x^4 + 1$ con un polinomio fijo:
 
 \[c^{-1}(x)=\{0b\}x^3 + \{0d\}x^2 + \{09\}x + \{0e\}\]
@@ -607,7 +607,7 @@ De nuevo es más fácil verlo como una multiplicación matricial y recordando la
 \[a_{2, c}=(\{0d\}\bullet b_{0, c}) \oplus (\{09\}\bullet b_{1, c}) \oplus (\{0e\}\bullet b_{2, c}) \oplus (\{0b\}\bullet b_{3, c})\]
 \[a_{3, c}=(\{0b\}\bullet b_{0, c}) \oplus (\{0d\}\bullet b_{1, c}) \oplus (\{09\}\bullet b_{2, c}) \oplus (\{0e\}\bullet b_{3, c})\]
 
-\subsubsection{Transformación AddRoundKey()} Esta transformación es la  que se describió en la Sección \textit{VI-B4}, es su propio inverso, ya que solo implica una aplicación de la operación XOR.\\
+\subsubsection{AddRoundKey()} Esta transformación es la  que se describió en la Sección \textit{VI-B4}, es su propio inverso, ya que solo implica una aplicación de la operación XOR.\\
 
 En la figura \ref{fig:9} se encuentra el diagrama del cifrado inverso de AES.
 \begin{figure}[h]
