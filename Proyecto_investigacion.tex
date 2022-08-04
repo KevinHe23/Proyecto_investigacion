@@ -62,27 +62,27 @@
 
 \IEEEpeerreviewmaketitle{}
 \begin{abstract}
-  Será escrito al terminar el proyecto de investigación
+  
   \bigbreak{}
   \textit{Palabras claves:} AES, criptografía, seguridad de la información,
-  cifrado.
+  cifrado, descifrado.
 \end{abstract}
 
 \section{Introducci\'on}
-Será escrito al terminar el proyecto de investigación
+
 
 \section{Planteamiento del problema}
 El avance tecnológico con el pasar del tiempo ha crecido de manera
 exponencial, con ello el flujo de información en la red ha aumentado su
 volumen, por tanto muchos de estos datos se encuentran vulnerables al no tener
 un sistema de seguridad adecuado que pueda resguardar dichos datos, estos
-mismos pertenecen a organizaciones, empresas o personas de interés.
-\bigbreak{}
-A medida avanza la tecnología para bien también avanza para mal y muchos de
+mismos pertenecen a organizaciones, empresas o personas de interés.\\
+
+A medida la tecnología avanza para bien también lo hace para mal y muchos de
 estos sistemas quedan obsoletos ante ataques cada vez indefendibles, para ello
 se debe implementar un método de seguridad informática; la criptografía en sus
-diferentes sistemas ayudará de manera eficiente a proteger esta información.
-\bigbreak{}
+diferentes sistemas ayudará de manera eficiente a proteger esta información.\\
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 En particular el cifrado simétrico preserva la confidencialidad tanto en las
 transmisiones de información como en su almacenamiento, protegiendo los
@@ -133,7 +133,9 @@ como se puede ver en el cuadro \ref{tab:HEX}.
   \caption{Notación hexadecimal}
   \label{tab:HEX}
 \end{table}
-\subsection{Matriz de estado}
+
+\subsection{Matrices de bytes}
+\subsection{El estado}
 El algoritmo AES divide los datos de entrada en bloques de $4$ palabras de $32$
 \textit{bits}, decir $4 \times 32 = 128$ \textit{bits}, se puede ver como una
 sucesión de $16$ \textit{bytes}.\\
@@ -616,7 +618,126 @@ En la figura \ref{fig:9} se encuentra el diagrama del cifrado inverso de AES.
 	\caption{Proceso de cifrado inverso AES}
 	\label{fig:9}
 \end{figure}
+\subsection{Cálculo de subclaves}
+El sistema de criptografía AES, concretamente en la transformación \textit{AddRoundKey}, utiliza diferentes subclaves a lo largo del cifrado/descifrado, todas derivadas de la clave original.\\
 
+\begin{defin}[Clave expandida]
+	Es una sucesión de todas las subclaves, puede verse como una matriz de 4 filas por $[4 \times (Nr +1)]$ columnas.
+\end{defin}
+
+Por tanto la clave expandida depende del número de rondas (\textit{Nr}) y este a su vez depende de la longitud de la llave (ver cuadro \ref{tab:cuadro3}).\\
+
+En este proyecto de investigación se considera una longitud de llave de $128$ bits, entonces nuestra matriz de clave expandida sera de $4$ filas por $(4\times11)$, es decir, 44 columnas.\\
+
+Un elemento importante de AES necesario para el cálculo de sublcaves es la matriz Rcon.
+Dicha matriz, según \cite{NIS01} es de la siguiente forma:
+\[
+\text{Rcon}= \begin{bmatrix}
+	01 & 02 & 04 & 08 & 10 & 20 & 40 & 80 & 1B & 36 \\
+	00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+	00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+	00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 
+\end{bmatrix}
+\] 
+A la primera columna de Rcon le asignaremos Rcon[1] y asi sucesivamente hasta la última columna, Rcon[10].
+
+\subsubsection{Cálculo de subclave a partir de una clave de 128 \textit{bits}}
+ \begin{figure}[h]
+ 	\includegraphics[scale=0.38]{figuras/clave_expandida.png}
+	\centering
+	\caption{Matriz de clave expandida}
+	\label{fig:10}
+\end{figure}
+
+Como se ve en la figura \ref{fig:10}, la matriz de clave expandida es de 4 filas por 44 columnas.
+
+\begin{enumerate}
+	\item El primer paso para calcular las subclaves es introducir la clave original en las primeras columnas. En el caso de 128 \textit{bits}, ocupa 4 columnas, como se puede apreciar en la figura \ref{fig:10} .\\
+	
+	Ahora se deberá calcular las columnas de las diferentes subclaves una a una.
+	Básicamente, la primera columna del grupo de \textit{Nk} columnas (en este caso 4) aplica una serie de operaciones que se describirán a continuación, mientras que el resto de columnas del grupo se calculan de manera análoga.\\
+	
+	Se denomina $C_i$ como la columna actual que queremos encontrar, en este momento tenemos que $i=4$.
+	\item Se aplica sobre $C_{i-1}$ una rotación hacia arriba.\\
+	Es decir,
+	\[\begin{bmatrix}
+		09 \\
+		CF \\
+		4F \\
+		3C 
+	\end{bmatrix} \Rightarrow  \begin{bmatrix}
+		CF \\
+		4F \\
+		3C \\
+		09 
+	\end{bmatrix} \]
+
+\item Sobre esta columna rotada, se aplica la transformación \textit{SubBytes} (ver cuadro \ref{tab:cuadro4}).\\
+Entonces,
+ \[    \begin{bmatrix}
+	CF \\
+	4F \\
+	3C \\
+	09 
+\end{bmatrix}\Rightarrow \begin{bmatrix}
+	8A \\
+	84 \\
+	EB \\
+	01 
+\end{bmatrix} \]
+\item A la trasformación \textit{SubBytes} que resulto en el paso anterior se le suman $C_{i-nk}$ y Rcon$[i / nk]$. \\
+Por tanto,
+\[\begin{bmatrix}
+	8A \\
+	84 \\
+	EB \\
+	01 
+\end{bmatrix}  \oplus \begin{bmatrix}
+	2B \\
+	7E \\
+	15 \\
+	16 
+\end{bmatrix} \oplus \begin{bmatrix}
+	01 \\
+	00 \\
+	00 \\
+	00 
+\end{bmatrix} = \begin{bmatrix}
+	A0 \\
+	FA \\
+	FE \\
+	17 
+\end{bmatrix} = C_4\]
+
+Ahora $i=5$
+ \item Para encontrar $C_i$, se realiza la suma de $C_{i-1}$ y $C_{i-nk}$.\\
+ Es decir,
+\[ \begin{bmatrix}
+	A0 \\
+	FA \\
+	FE \\
+	17 
+\end{bmatrix} \oplus \begin{bmatrix}
+	28 \\
+	AE \\
+	D2 \\
+	A6 
+\end{bmatrix} = \begin{bmatrix}
+	88 \\
+	54 \\
+	2C \\
+	B1 
+\end{bmatrix} = C_5\]
+\end{enumerate}
+Una vez hecho esto, las dos columnas que quedan por calcular de la primera subclave, $C_6$ y $C_7$, se hallan aplicando el paso 5.
+\begin{figure}[h]
+	\includegraphics[scale=0.36]{figuras/clave_expandida2.png}
+	\centering
+	\caption{Matriz de clave expandida con subclave para la primera ronda}
+	\label{fig:10}
+\end{figure}
+
+Para calcular una nueva subclave, volvemos a realizar el paso 2 y se comienza de nuevo.
 
 
 \section{Resultados}
@@ -640,10 +761,9 @@ En la figura \ref{fig:9} se encuentra el diagrama del cifrado inverso de AES.
     Encryption Standard (AES)}. Federal Information Processing Standards Publication
   197.
 
-  \bibitem{GitHub-Docs} GitHub Docs.\textit{ Repositorio proyecto de
-    investigación.} \url{https://github.com/KevinHe23/Proyecto_investigacion}.
-
-  \bibitem{GitHub-Docs1} GitHub Docs.\textit{ Repositorio implementación AES.}
+  \bibitem{Python} GitHub Docs.\textit{ Repositorio implementación AES en python.}
   \url{https://github.com/KevinHe23/AES-python}.
+   \bibitem{Javascript} GitHub Docs.\textit{ Repositorio simulación app-web-aes.}
+  \url{https://github.com/KevinHe23/app-web-aes}.
 \end{thebibliography}
 \end{document}
